@@ -9,10 +9,32 @@
  */
 public class RebuiltBinaryTree {
     public TreeNode reConstructBinaryTree(int[] pre, int[] in) {
-        return null;
+        TreeNode root = reConstructBinaryTree(pre, 0, pre.length - 1, in, 0, in.length-1);
+        return root;
     }
 
-    private TreeNode reConstuctBinaryTree(int[] pre, int startpre, int endpre, int[] in, int startin, int endin) {
+    private TreeNode reConstructBinaryTree(int[] pre, int startpre, int endpre, int[] in, int startin, int endin) {
+        if (startpre > endpre || startin > endin) {
+            return null;
+        }
+        //建立节点
+        TreeNode root = new TreeNode(pre[startpre]);
+        //在后续列表中先寻找根节点的位置
+        for(int i =  startin;i<=endin;i++) {
+            if (pre[startpre] == in[i]) {
+                /**
+                 * 因为先序列表中第一个已经是跟元素，则startpre加一从第二个开始，endpre中i-startin指的是后续列表中左子树的元素个数，则再加上startpre就是
+                 * 左子树的尾节点，如第一轮中序则会变成（472）1（5386）分成两部分，先序则会成（1）（247）（3568）
+                 */
+                root.left = reConstructBinaryTree(pre, startpre + 1, i + startpre - startin, in, startin, i - 1);
+                /**
+                 * 因为左子树在进行遍历的时候，i已经发生过位移，i-startin指的是左子树中，已经遍历的左节点的个数，则先序遍历中肯定是先左子树遍历，
+                 * 于是startpre+(i-startin)+1必定是左子树中第一个右节点，同理其他的也是一样的，必然是二叉树中的右子树，在进行递归遍历建树
+                 */
+                root.right = reConstructBinaryTree(pre,startpre+(i-startin)+1,endpre,in,i+1,endin);
+            }
+        }
+        return root;
     }
 
 
